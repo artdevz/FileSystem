@@ -1,6 +1,5 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Iinclude -Ilibs
-LIBS = -lraylib -lm -lpthread -ldl -lX11
 
 # Dir
 SRC_DIR = src
