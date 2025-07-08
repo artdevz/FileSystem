@@ -86,11 +86,33 @@ void FileSystem::Cd(const std::string& path) {
 
 void FileSystem::Move(const std::string& fileName, const std::string& targetDir) {}
 
-void FileSystem::WriteToFile(const std::string& fileName, const std::string& content) {
-    root->Write(content, blockStorage);
+void FileSystem::Echo(const std::string& fileName, const std::string& content) {
+    if (fileName.empty()) {
+        std::cout << "\033[1;31m[Erro]\033[0m Nome de arquivo não pode ser vazio\n";
+        return;
+    }
+    for (Inode* child : currentDir->children) {
+        if (fileName == child->name) {
+            if (child->IsDirectory()) { std::cout << "\033[1;31m[Erro]\033[0m '"<< fileName <<"' é um diretório\n"; return; }
+            child->Write(content, blockStorage);
+            return;
+        }
+    }
+    Touch(fileName);
+    Echo(fileName, content);
 }
 
-void FileSystem::ReadFromFile(const std::string& fileName) {}
+void FileSystem::Cat(const std::string& fileName) {
+    for (Inode* child : currentDir->children) {
+        if (fileName == child->name) {
+            if (child->IsDirectory()) { std::cout << "\033[1;31m[Erro]\033[0m '"<< fileName <<"' é um diretório\n"; return; }
+            // std::cout << child->Read() << "\n";
+            for (std::string content : blockStorage) std::cout << content << "\n";
+            return;
+        }
+    }
+    std::cout << "\033[1;31m[Erro]\033[0m não há nenhum diretório ou arquivo com esse '"<< fileName <<"' caminho\n";
+}
 
 void FileSystem::Rm(const std::string& name) {}
 

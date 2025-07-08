@@ -48,13 +48,35 @@ int main() {
             continue;
         }
 
-        if (cmd == "write") {
-            std::cout << "Adicionar blocos\n";
+        if (cmd == "echo") {
+            std::string content;
+            char ch;
+
+            iss >> std::ws;
+            iss >> ch;
+            if (ch == '"') std::getline(iss, content, '"');
+            else {
+                std::cout << "\033[1;31m[Erro]\033[0m Conteúdo precisa estar entre aspas\n";
+                continue;
+            }
+
+            std::string redirect;
+            iss >> redirect;
+            if (redirect != ">") {
+                std::cout << "\033[1;31m[Erro]\033[0m Esperado >\n";
+                continue;
+            }
+
+            std::string fileName;
+            iss >> fileName;
+            fs.Echo(fileName, content);
             continue;
         }
 
-        if (cmd == "read") {
-            std::cout << "Imprimir conteúdo dos blocos\n";
+        if (cmd == "cat") {
+            std::string name;
+            iss >> name;
+            fs.Cat(name);
             continue;
         }
 
