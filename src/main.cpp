@@ -10,7 +10,12 @@ int main() {
     std::cout << "Sistema de Arquivos (I-Node Simulado)\n";
 
     while(true) {
-        std::cout << "> ";
+        std::cout 
+        << "\033[1;32m" << "abgr@PC" << "\033[0m"
+        << "\033[37m" << ":" << "\033[1m"
+        << "\033[1;34m" << "~" << fs.GetCurrentPath() << "\033[0m"
+        << "\033[37m" << "$ " << "\033[0m";
+        
         std::getline(std::cin, input);
         std::istringstream iss(input);
 
@@ -18,22 +23,28 @@ int main() {
         iss >> cmd;
 
         if (cmd == "mkdir") {
-            std::cout << "Criar Diretório\n";
+            std::string name;
+            iss >> name;
+            fs.Mkdir(name);
             continue;
         }
 
         if (cmd == "touch") {
-            std::cout << "Criar Arquivo\n";
+            std::string name;
+            iss >> name;
+            fs.Touch(name);
             continue;
         }
 
         if (cmd == "ls") {
-            std::cout << "Listar filhos\n";
+            fs.Ls();
             continue;
         }
 
         if (cmd == "cd") {
-            std::cout << "Navegar pra sub-diretório ou ..\n";
+            std::string path;
+            iss >> path;
+            fs.Cd(path);
             continue;
         }
 

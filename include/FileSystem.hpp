@@ -17,6 +17,8 @@ public:
     void ReadFromFile(const std::string& fileName);                             // Remove de um e adiciona em outro (Ctrl X)
     void Rm(const std::string& name);                                           // Remove arquivo/diretório
 
+    std::string GetCurrentPath() const;
+
 private:
     Inode* root;
     Inode* currentDir;
