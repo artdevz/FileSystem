@@ -88,7 +88,9 @@ int main() {
         }
 
         if (cmd == "rm") {
-            std::cout << "Remove arquivo/diretório\n";
+            std::string name;
+            iss >> name;
+            fs.Rm(name, false);
             continue;
         }
 

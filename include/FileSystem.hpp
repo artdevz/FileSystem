@@ -15,7 +15,7 @@ public:
     void Move(const std::string& fileName, const std::string& targetDir);       
     void Echo(const std::string& fileName, const std::string& content, bool overwrite);         
     void Cat(const std::string& fileName);                                      
-    void Rm(const std::string& name);                                           
+    void Rm(const std::string& name, bool recursive);                                           
 
     std::string GetCurrentPath() const;
 

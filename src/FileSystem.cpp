@@ -1,5 +1,6 @@
 #include "FileSystem.hpp"
 #include <iostream>
+#include <algorithm>
 
 FileSystem::FileSystem() {
     root = new Inode("/", Inode::Type::DIRECTORY);
@@ -18,11 +19,9 @@ void FileSystem::Mkdir(const std::string& name) {
         return;
     }
 
-    for (Inode* child : currentDir->children) {
-        if (name == child->name) {
-            std::cout << "\033[1;31m[Erro]\033[0m Já existe um arquivo com '" << name << "'\n";
-            return;
-        }
+    if (FindInode(name)) {
+        std::cout << "\033[1;31m[Erro]\033[0m Já existe um arquivo com '" << name << "'\n";
+        return;
     }
     
     Inode* newInode = new Inode(name, Inode::Type::DIRECTORY);
@@ -36,11 +35,9 @@ void FileSystem::Touch(const std::string& name) {
         return;
     }
 
-    for (Inode* child : currentDir->children) {
-        if (name == child->name) {
-            std::cout << "\033[1;31m[Erro]\033[0m Já existe um arquivo com '" << name << "'\n";
-            return;
-        }
+    if (FindInode(name)) {
+        std::cout << "\033[1;31m[Erro]\033[0m Já existe um arquivo com '" << name << "'\n";
+        return;
     }
 
     Inode* newInode = new Inode(name, Inode::Type::FILE);
@@ -71,17 +68,18 @@ void FileSystem::Cd(const std::string& path) {
         return;
     }
 
-    for (Inode* child : currentDir->children) {
-        if (child->name == path) {
-            if (child->IsDirectory()) {
-                currentDir = child;
-                return;
-            }
-            std::cout << "\033[1;31m[Erro]\033[0m "<< path <<" não é um diretório\n";
-            return;
-        }
+    Inode* target = FindInode(path);
+    if (!target) {
+        std::cout << "\033[1;31m[Erro]\033[0m não há nenhum diretório ou arquivo com esse '"<< path <<"' caminho\n";
+        return;
     }
-    std::cout << "\033[1;31m[Erro]\033[0m não há nenhum diretório ou arquivo com esse '"<< path <<"' caminho\n";
+
+    if (!target->IsDirectory()) {
+        std::cout << "\033[1;31m[Erro]\033[0m "<< path <<" não é um diretório\n";
+        return;
+    }
+
+    currentDir = target;    
 }
 
 void FileSystem::Move(const std::string& fileName, const std::string& targetDir) {}
@@ -91,37 +89,69 @@ void FileSystem::Echo(const std::string& fileName, const std::string& content, b
         std::cout << "\033[1;31m[Erro]\033[0m Nome de arquivo não pode ser vazio\n";
         return;
     }
-    for (Inode* child : currentDir->children) {
-        if (fileName == child->name) {
-            if (child->IsDirectory()) { std::cout << "\033[1;31m[Erro]\033[0m '"<< fileName <<"' é um diretório\n"; return; }
-            child->Write(content, blockStorage, overwrite);
-            return;
-        }
+
+    Inode* target = FindInode(fileName);
+    if (!target) Touch(fileName);
+
+    if (target->IsDirectory()) {
+        std::cout << "\033[1;31m[Erro]\033[0m '"<< fileName <<"' é um diretório\n";
+        return;
     }
-    Touch(fileName);
-    Echo(fileName, content, overwrite);
+    
+    target->Write(content, blockStorage, overwrite);
 }
 
 void FileSystem::Cat(const std::string& fileName) {
-    for (Inode* child : currentDir->children) {
-        if (fileName == child->name) {
-            if (child->IsDirectory()) { std::cout << "\033[1;31m[Erro]\033[0m '"<< fileName <<"' é um diretório\n"; return; }
-            std::cout << child->Read(blockStorage) << "\n";
-            return;
-        }
+    Inode* target = FindInode(fileName);
+    if (!target) {
+        std::cout << "\033[1;31m[Erro]\033[0m não há nenhum diretório ou arquivo com esse '"<< fileName <<"' caminho\n";
+        return;
     }
-    std::cout << "\033[1;31m[Erro]\033[0m não há nenhum diretório ou arquivo com esse '"<< fileName <<"' caminho\n";
+    
+    if (target->IsDirectory()) {
+        std::cout << "\033[1;31m[Erro]\033[0m '"<< fileName <<"' é um diretório\n";
+        return;
+    }
+
+    std::cout << target->Read(blockStorage) << "\n";
 }
 
-void FileSystem::Rm(const std::string& name) {}
+void FileSystem::Rm(const std::string& name, bool recursive) {
+    Inode* target = FindInode(name);
+    if (!target) {
+        std::cout << "\033[1;31m[Erro]\033[0m não há nenhum diretório ou arquivo com esse '"<< name <<"' nome\n";
+        return;
+    }
+    
+    if (target->IsDirectory() && !target->children.empty() && !recursive) {
+        std::cout << "\033[1;31m[Erro]\033[0m Diretório não está vazio. Use -r para remoção recursiva\n";
+        return;
+    }
+
+    currentDir->children.erase(
+        std::remove(currentDir->children.begin(), currentDir->children.end(), target),
+        currentDir->children.end()
+    );
+
+    if (recursive) RecursiveDelete(target);
+    else DeleteInode(target);
+}
 
 // AUX
 
 Inode* FileSystem::FindInode(const std::string& name) const {
+    for (Inode* child : currentDir->children) {
+        if (child->name == name) return child;
+    }
     return nullptr;
 }
 
-void FileSystem::DeleteInode(Inode* node) {}
+void FileSystem::DeleteInode(Inode* node) {
+    for (int i : node->dataBlocks) {
+        if (i >= 0 && i < static_cast<int>(blockStorage.size())) blockStorage[i] = "null";
+    }
+    delete node;
+}
 
 void FileSystem::RecursiveDelete(Inode* node) {}
 
