@@ -82,7 +82,30 @@ void FileSystem::Cd(const std::string& path) {
     currentDir = target;    
 }
 
-void FileSystem::Move(const std::string& fileName, const std::string& targetDir) {}
+void FileSystem::Move(const std::string& fileName, const std::string& targetDir) {
+    Inode* file = FindInode(fileName);
+    if (!file) {
+        std::cout << "\033[1;31m[Erro]\033[0m não há nenhum diretório ou arquivo com esse '"<< file <<"' nome\n";
+        return;
+    }
+    
+    Inode* target = FindInode(targetDir);
+    if (target && target->IsDirectory()) {
+        auto& children = currentDir->children;
+        children.erase(std::remove(children.begin(), children.end(), file), children.end());
+
+        file->parent = target;
+        target->children.push_back(file);
+        return;
+    }
+    
+    if (!target) {
+        file->name = targetDir;
+        return;
+    }
+    
+    std::cout << "\033[1;31m[Erro]\033[0m Proíbido renomear para '"<< targetDir <<"'. Já existe arquivo ou diretório com esse nome\n";
+}
 
 void FileSystem::Echo(const std::string& fileName, const std::string& content, bool overwrite) {
     if (fileName.empty()) {
