@@ -11,10 +11,10 @@ int main() {
 
     while(true) {
         std::cout 
-        << "\033[1;32m" << "BrunOS" << "\033[0m"
-        << "\033[37m" << ":" << "\033[1m"
-        << "\033[1;34m" << fs.GetCurrentPath() << "\033[0m"
-        << "\033[37m" << "$ " << "\033[0m";
+        << "\033[1;36m" << "BrunOS" << "\033[0m"
+        << "\033[1;35m" << " » " << "\033[1m"
+        << "\033[1;33m" << fs.GetCurrentPath() << "\033[0m"
+        << "\033[1;35m" << " » " << "\033[0m";
         
         std::getline(std::cin, input);
         std::istringstream iss(input);
