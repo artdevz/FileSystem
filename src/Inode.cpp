@@ -11,7 +11,12 @@ std::string Inode::Read(const std::vector<std::string>& blockStorage) const {
     return result;
 }
 
-void Inode::Write(const std::string& data, std::vector<std::string>& blockStorage) {
+void Inode::Write(const std::string& data, std::vector<std::string>& blockStorage, bool overwrite) {
+    if (overwrite) {
+        dataBlocks.clear();
+        size = 0;
+    }
+    
     blockStorage.push_back(data);
     dataBlocks.push_back(blockStorage.size() - 1);
     size += data.size();

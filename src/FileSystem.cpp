@@ -94,7 +94,7 @@ void FileSystem::Echo(const std::string& fileName, const std::string& content, b
     for (Inode* child : currentDir->children) {
         if (fileName == child->name) {
             if (child->IsDirectory()) { std::cout << "\033[1;31m[Erro]\033[0m '"<< fileName <<"' é um diretório\n"; return; }
-            child->Write(content, blockStorage);
+            child->Write(content, blockStorage, overwrite);
             return;
         }
     }
