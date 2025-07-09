@@ -11,7 +11,7 @@ int main() {
 
     while(true) {
         std::cout 
-        << "\033[1;32m" << "abgr@PC" << "\033[0m"
+        << "\033[1;32m" << "BrunOS" << "\033[0m"
         << "\033[37m" << ":" << "\033[1m"
         << "\033[1;34m" << "~" << fs.GetCurrentPath() << "\033[0m"
         << "\033[37m" << "$ " << "\033[0m";
@@ -62,14 +62,16 @@ int main() {
 
             std::string redirect;
             iss >> redirect;
-            if (redirect != ">") {
-                std::cout << "\033[1;31m[Erro]\033[0m Esperado >\n";
+            if (!(redirect == ">" || redirect == ">>")) {
+                std::cout << "\033[1;31m[Erro]\033[0m Esperado > ou >>\n";
                 continue;
             }
 
+            bool overwrite = (redirect == ">")? true : false;
+
             std::string fileName;
             iss >> fileName;
-            fs.Echo(fileName, content);
+            fs.Echo(fileName, content, overwrite);
             continue;
         }
 

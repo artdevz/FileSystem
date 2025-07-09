@@ -8,14 +8,14 @@ public:
     FileSystem();
     ~FileSystem();
 
-    void Mkdir(const std::string& name);                                        // Cria diretório
-    void Touch(const std::string& name);                                        // Cria arquivo simples
-    void Ls() const;                                                            // Lista filhos do diretório atual
-    void Cd(const std::string& path);                                           // Muda para subdiretório ou ..
-    void Move(const std::string& fileName, const std::string& targetDir);       // Adiciona blocos
-    void Echo(const std::string& fileName, const std::string& content);         // Imprime conteúdo dos blocos
-    void Cat(const std::string& fileName);                                      // Remove de um e adiciona em outro (Ctrl X)
-    void Rm(const std::string& name);                                           // Remove arquivo/diretório
+    void Mkdir(const std::string& name);                                        
+    void Touch(const std::string& name);                                        
+    void Ls() const;                                                            
+    void Cd(const std::string& path);                                          
+    void Move(const std::string& fileName, const std::string& targetDir);       
+    void Echo(const std::string& fileName, const std::string& content, bool overwrite);         
+    void Cat(const std::string& fileName);                                      
+    void Rm(const std::string& name);                                           
 
     std::string GetCurrentPath() const;
 

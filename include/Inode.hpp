@@ -18,7 +18,7 @@ public:
 
     Inode* parent;
 
-    std::string Read();
+    std::string Read(const std::vector<std::string>& blockStorage) const;
     void Write(const std::string& data, std::vector<std::string>& blockStorage);
 
     bool IsDirectory() const;

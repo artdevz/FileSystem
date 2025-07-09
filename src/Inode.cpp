@@ -3,10 +3,12 @@
 Inode::Inode(std::string name, Type type) :
     name(name), type(type) {}
 
-// Concatena blocos referenciados em dataBlocks e retorna o conteúdo
-std::string Inode::Read() {
-    std::string s = "I-Node lido";
-    return s;
+std::string Inode::Read(const std::vector<std::string>& blockStorage) const {
+    std::string result;
+    for (int index : dataBlocks) {
+        if (index >= 0 && index < static_cast<int>(blockStorage.size())) result += blockStorage[index];
+    }
+    return result;
 }
 
 void Inode::Write(const std::string& data, std::vector<std::string>& blockStorage) {
