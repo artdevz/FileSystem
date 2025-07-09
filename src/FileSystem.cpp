@@ -153,7 +153,13 @@ void FileSystem::DeleteInode(Inode* node) {
     delete node;
 }
 
-void FileSystem::RecursiveDelete(Inode* node) {}
+void FileSystem::RecursiveDelete(Inode* node) {
+    if (node->IsDirectory()) {
+        for (Inode* child : node->children) RecursiveDelete(child);
+        node->children.clear();
+    }
+    DeleteInode(node);
+}
 
 // GET
 

@@ -89,8 +89,24 @@ int main() {
 
         if (cmd == "rm") {
             std::string name;
-            iss >> name;
-            fs.Rm(name, false);
+            bool recursive = false;
+            
+            std::string token;
+            if (!(iss >> token)) {
+                std::cout << "\033[1;31m[Erro]\033[0m Nome não informado\n";
+                continue;
+            }
+
+            if (token == "-r") {
+                recursive = true;
+                if (!(iss >> name)) {
+                    std::cout << "\033[1;31m[Erro]\033[0m Nome não informado após -r\n";
+                    continue;
+                }
+            }
+            else name = token;
+
+            fs.Rm(name, recursive);
             continue;
         }
 
