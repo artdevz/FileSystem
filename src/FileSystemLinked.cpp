@@ -50,7 +50,7 @@ void FileSystemLinked::Touch(const std::string& path) {
     }
 
     size_t lastSlash = path.find_last_of('/');
-    std::string parentPath = (lastSlash == std::string::npos) ? "" : path.substr(0, lastSlash);
+    std::string parentPath = (lastSlash == std::string::npos) ? "/" : path.substr(0, lastSlash);
     std::string name = path.substr(lastSlash + 1);
 
     InodeLinked* parent = FindInode(parentPath, false);
