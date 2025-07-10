@@ -1,21 +1,21 @@
-#include "FileSystem.hpp"
+#include "FileSystemIndexed.hpp"
 #include <iostream>
 #include <algorithm>
 #include <sstream>
 
-FileSystem::FileSystem() {
+FileSystemIndexed::FileSystemIndexed() {
     root = new Inode("/", Inode::Type::DIRECTORY);
     root->parent = nullptr;
     currentDir = root;
 }
 
-FileSystem::~FileSystem() { 
+FileSystemIndexed::~FileSystemIndexed() { 
     RecursiveDelete(root);
 }
 
 // CMD
 
-void FileSystem::Mkdir(const std::string& path) {
+void FileSystemIndexed::Mkdir(const std::string& path) {
     if (path.empty()) {
         PRINT_ERROR("Nome de diretório não pode ser vazio");
         return;
@@ -41,7 +41,7 @@ void FileSystem::Mkdir(const std::string& path) {
 
 
 
-void FileSystem::Touch(const std::string& path) {
+void FileSystemIndexed::Touch(const std::string& path) {
     if (path.empty()) {
         PRINT_ERROR("Nome de arquivo não pode ser vazio");
         return;
@@ -67,7 +67,7 @@ void FileSystem::Touch(const std::string& path) {
 
 
 
-void FileSystem::Ls(const std::string& path) const {
+void FileSystemIndexed::Ls(const std::string& path) const {
     Inode* dir = path.empty()? currentDir : FindInode(path);
 
     if (!dir) {
@@ -92,7 +92,7 @@ void FileSystem::Ls(const std::string& path) const {
 
 
 
-void FileSystem::Cd(const std::string& path) {
+void FileSystemIndexed::Cd(const std::string& path) {
     if (path.empty()) {
         currentDir = root;
         return;
@@ -114,7 +114,7 @@ void FileSystem::Cd(const std::string& path) {
 
 
 
-void FileSystem::Mv(const std::string& sourcePath, const std::string& destPath) {
+void FileSystemIndexed::Mv(const std::string& sourcePath, const std::string& destPath) {
     Inode* sourceNode = FindInode(sourcePath);
     if (!sourceNode) {
         PRINT_ERROR("Não há nenhum diretório ou arquivo com esse '"<< sourcePath <<"' nome");
@@ -178,7 +178,7 @@ void FileSystem::Mv(const std::string& sourcePath, const std::string& destPath) 
 
 
 
-void FileSystem::Echo(const std::string& path, const std::string& content, bool overwrite) {
+void FileSystemIndexed::Echo(const std::string& path, const std::string& content, bool overwrite) {
     if (path.empty()) {
         PRINT_ERROR("Nome de arquivo não pode ser vazio");
         return;
@@ -204,7 +204,7 @@ void FileSystem::Echo(const std::string& path, const std::string& content, bool 
 
 
 
-void FileSystem::Cat(const std::string& path) {
+void FileSystemIndexed::Cat(const std::string& path) {
     Inode* target = FindInode(path);
     if (!target) {
         PRINT_ERROR("Não há nenhum diretório ou arquivo com esse '"<< path <<"' caminho");
@@ -224,7 +224,7 @@ void FileSystem::Cat(const std::string& path) {
 
 
 
-void FileSystem::Rm(const std::string& path, bool recursive) {
+void FileSystemIndexed::Rm(const std::string& path, bool recursive) {
     Inode* target = FindInode(path);
     if (!target) {
         PRINT_ERROR("Não há nenhum diretório ou arquivo com esse '"<< path <<"' nome");
@@ -253,7 +253,7 @@ void FileSystem::Rm(const std::string& path, bool recursive) {
 
 // AUX
 
-Inode* FileSystem::FindChild(Inode* parent, const std::string& name) const {
+Inode* FileSystemIndexed::FindChild(Inode* parent, const std::string& name) const {
     if (!parent) return nullptr;
     for (Inode* child : parent->children) {
         if (child->name == name) return child;
@@ -263,7 +263,7 @@ Inode* FileSystem::FindChild(Inode* parent, const std::string& name) const {
 
 
 
-Inode* FileSystem::FindInode(const std::string& path, bool resolveToParent) const {
+Inode* FileSystemIndexed::FindInode(const std::string& path, bool resolveToParent) const {
     if (path.empty()) return nullptr;
 
     Inode* current = (path[0] == '/')? root : currentDir;
@@ -305,7 +305,7 @@ Inode* FileSystem::FindInode(const std::string& path, bool resolveToParent) cons
 
 
 
-void FileSystem::DeleteInode(Inode* node) {
+void FileSystemIndexed::DeleteInode(Inode* node) {
     for (int i : node->dataBlocks) {
         if (i >= 0 && i < static_cast<int>(blockStorage.size())) {
             blockStorage[i] = "null";
@@ -317,7 +317,7 @@ void FileSystem::DeleteInode(Inode* node) {
 
 
 
-void FileSystem::RecursiveDelete(Inode* node) {
+void FileSystemIndexed::RecursiveDelete(Inode* node) {
     if (node->IsDirectory()) {
         for (Inode* child : node->children) RecursiveDelete(child);
         node->children.clear();
@@ -327,7 +327,7 @@ void FileSystem::RecursiveDelete(Inode* node) {
 
 // GET
 
-std::string FileSystem::GetCurrentPath() const {
+std::string FileSystemIndexed::GetCurrentPath() const {
     if (currentDir == root) return "/";
 
     std::string path;

@@ -109,7 +109,7 @@ void FileSystemLinked::Cd(const std::string& path) {
     currentDir = target;    
 }
 
-void FileSystemLinked::Move(const std::string& sourcePath, const std::string& destPath) {
+void FileSystemLinked::Mv(const std::string& sourcePath, const std::string& destPath) {
     InodeLinked* sourceNode = FindInode(sourcePath);
     if (!sourceNode) {
         std::cout << "\033[1;31m[Erro]\033[0m Não há nenhum diretório ou arquivo com esse '" 

@@ -1,10 +1,23 @@
+#include "FileSystemIndexed.hpp"
 #include "FileSystemLinked.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <memory>
 
-int main() {
-    FileSystemLinked fs;
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cerr << "Uso: " << argv[0] << " < 0 | 1 >\n[0] -> Indexado\n[1] -> Encadeado\n";
+        return 1;
+    }
+
+    bool mode = std::stoi(argv[1]);
+    std::unique_ptr<FileSystem> fs;
+    if (mode) {
+        fs = std::make_unique<FileSystemLinked>();
+    }
+    else fs = std::make_unique<FileSystemIndexed>();
+
     std::string input;
 
     std::cout << "Sistema de Arquivos (I-Node Simulado)\n";
@@ -13,7 +26,7 @@ int main() {
         std::cout 
         << "\033[1;36m" << "BrunOS" << "\033[0m"
         << "\033[1;35m" << " » " << "\033[1m"
-        << "\033[1;33m" << fs.GetCurrentPath() << "\033[0m"
+        << "\033[1;33m" << fs->GetCurrentPath() << "\033[0m"
         << "\033[1;35m" << " » " << "\033[0m";
         
         std::getline(std::cin, input);
@@ -25,28 +38,28 @@ int main() {
         if (cmd == "mkdir") {
             std::string path;
             iss >> path;
-            fs.Mkdir(path);
+            fs->Mkdir(path);
             continue;
         }
 
         if (cmd == "touch") {
             std::string path;
             iss >> path;
-            fs.Touch(path);
+            fs->Touch(path);
             continue;
         }
 
         if (cmd == "ls") {
             std::string path;
             iss >> path;
-            fs.Ls(path);
+            fs->Ls(path);
             continue;
         }
 
         if (cmd == "cd") {
             std::string path;
             iss >> path;
-            fs.Cd(path);
+            fs->Cd(path);
             continue;
         }
 
@@ -73,14 +86,14 @@ int main() {
 
             std::string path;
             iss >> path;
-            fs.Echo(path, content, overwrite);
+            fs->Echo(path, content, overwrite);
             continue;
         }
 
         if (cmd == "cat") {
             std::string path;
             iss >> path;
-            fs.Cat(path);
+            fs->Cat(path);
             continue;
         }
 
@@ -89,7 +102,7 @@ int main() {
             std::string destiny;
             iss >> source;
             iss >> destiny;
-            fs.Move(source, destiny);
+            fs->Mv(source, destiny);
             continue;
         }
 
@@ -112,21 +125,23 @@ int main() {
             }
             else path = token;
 
-            fs.Rm(path, recursive);
+            fs->Rm(path, recursive);
             continue;
         }
 
         if (cmd == "status") {
-            fs.PrintBlockStatus();
+            if (auto linked = dynamic_cast<FileSystemLinked*>(fs.get())) linked->PrintBlockStatus();
+            else PRINT_ERROR("Comando exclusivo do modo encadeado");
             continue;
         }
 
         if (cmd == "blocos") {
-        std::string path;
-        iss >> path;
-        fs.ShowBlocks(path);
-        continue;
-    }
+            std::string path;
+            iss >> path;
+            if (auto linked = dynamic_cast<FileSystemLinked*>(fs.get())) linked->ShowBlocks(path);
+            else PRINT_ERROR("Comando exclusivo do modo encadeado");
+            continue;
+        }
 
         if (cmd == "exit") {
             std::cout << "\033[1;36mBrunOS\033[0m\033[1;35m » \033[0m\033[1;33mSaindo...\033[0m\n";
