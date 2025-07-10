@@ -10,7 +10,7 @@ FileSystemLinked::FileSystemLinked() {
     currentDir = root;
     nextBlockIndex = 0;
 
-    blockStorage.resize(10000);  // DataBlock default: data = "", next = -1
+    blockStorage.resize(100000);  
 }
 
 FileSystemLinked::~FileSystemLinked() {

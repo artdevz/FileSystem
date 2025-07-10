@@ -1,4 +1,5 @@
 #include "InodeLinked.hpp"
+#include <iostream>
 
 InodeLinked::InodeLinked(std::string name, Type type)
     : name(name), type(type), size(0), firstBlock(-1), parent(nullptr) {}
@@ -21,8 +22,12 @@ void InodeLinked::Write(const std::string& data, std::vector<DataBlock>& blocks,
     if (overwrite && firstBlock != -1) {
         int current = firstBlock;
         while (current != -1) {
+            if (current < 0 || current >= static_cast<int>(blocks.size())) {
+                std::cerr << "[Erro] Bloco inválido ao limpar: " << current << "\n";
+                break;
+            }
             int next = blocks[current].next;
-            blocks[current].data = "null";
+            blocks[current].data.clear();  // limpa corretamente
             blocks[current].next = -1;
             current = next;
         }
@@ -38,25 +43,29 @@ void InodeLinked::Write(const std::string& data, std::vector<DataBlock>& blocks,
         i += blockSize;
 
         int newBlock = -1;
+
+        // Busca bloco livre
         for (int j = 0; j < static_cast<int>(blocks.size()); ++j) {
-            if (blocks[j].data == "null") {
+            if (blocks[j].data.empty()) {
                 newBlock = j;
                 break;
             }
         }
 
+        // Se não encontrar, não há mais blocos livres
         if (newBlock == -1) {
-            blocks.push_back({ "null", -1 });
-            newBlock = blocks.size() - 1;
+            std::cerr << "[Erro] Limite de blocos atingido\n";
+            return;
         }
 
         blocks[newBlock].data = chunk;
         blocks[newBlock].next = -1;
 
-        if (firstBlock == -1)
+        if (firstBlock == -1) {
             firstBlock = newBlock;
-        else
+        } else if (prevBlock >= 0 && prevBlock < static_cast<int>(blocks.size())) {
             blocks[prevBlock].next = newBlock;
+        }
 
         prevBlock = newBlock;
         size += chunk.size();
