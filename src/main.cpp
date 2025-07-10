@@ -23,21 +23,23 @@ int main() {
         iss >> cmd;
 
         if (cmd == "mkdir") {
-            std::string name;
-            iss >> name;
-            fs.Mkdir(name);
+            std::string path;
+            iss >> path;
+            fs.Mkdir(path);
             continue;
         }
 
         if (cmd == "touch") {
-            std::string name;
-            iss >> name;
-            fs.Touch(name);
+            std::string path;
+            iss >> path;
+            fs.Touch(path);
             continue;
         }
 
         if (cmd == "ls") {
-            fs.Ls();
+            std::string path;
+            iss >> path;
+            fs.Ls(path);
             continue;
         }
 
@@ -56,66 +58,66 @@ int main() {
             iss >> ch;
             if (ch == '"') std::getline(iss, content, '"');
             else {
-                std::cout << "\033[1;31m[Erro]\033[0m Conteúdo precisa estar entre aspas\n";
+                PRINT_ERROR("Conteúdo precisa estar entre aspas");
                 continue;
             }
 
             std::string redirect;
             iss >> redirect;
             if (!(redirect == ">" || redirect == ">>")) {
-                std::cout << "\033[1;31m[Erro]\033[0m Esperado > ou >>\n";
+                PRINT_ERROR("Esperado > ou >>");
                 continue;
             }
 
             bool overwrite = (redirect == ">")? true : false;
 
-            std::string fileName;
-            iss >> fileName;
-            fs.Echo(fileName, content, overwrite);
+            std::string path;
+            iss >> path;
+            fs.Echo(path, content, overwrite);
             continue;
         }
 
         if (cmd == "cat") {
-            std::string name;
-            iss >> name;
-            fs.Cat(name);
+            std::string path;
+            iss >> path;
+            fs.Cat(path);
             continue;
         }
 
         if (cmd == "mv") {
-            std::string origin;
-            std::string target;
-            iss >> origin;
-            iss >> target;
-            fs.Move(origin, target);
+            std::string source;
+            std::string destiny;
+            iss >> source;
+            iss >> destiny;
+            fs.Mv(source, destiny);
             continue;
         }
 
         if (cmd == "rm") {
-            std::string name;
+            std::string path;
             bool recursive = false;
             
             std::string token;
             if (!(iss >> token)) {
-                std::cout << "\033[1;31m[Erro]\033[0m Nome não informado\n";
+                PRINT_ERROR("Nome não informado");
                 continue;
             }
 
             if (token == "-r") {
                 recursive = true;
-                if (!(iss >> name)) {
-                    std::cout << "\033[1;31m[Erro]\033[0m Nome não informado após -r\n";
+                if (!(iss >> path)) {
+                    PRINT_ERROR("Nome não informado após -r");
                     continue;
                 }
             }
-            else name = token;
+            else path = token;
 
-            fs.Rm(name, recursive);
+            fs.Rm(path, recursive);
             continue;
         }
 
         if (cmd == "exit") {
-            std::cout << "Saindo...\n";
+            std::cout << "\033[1;36mBrunOS\033[0m\033[1;35m » \033[0m\033[1;33mSaindo...\033[0m\n";
             break;
         }
 
