@@ -9,7 +9,9 @@ FileSystem::FileSystem() {
     nextBlockIndex = 0;
 }
 
-FileSystem::~FileSystem() {}
+FileSystem::~FileSystem() { 
+    RecursiveDelete(root);
+}
 
 // CMD
 
