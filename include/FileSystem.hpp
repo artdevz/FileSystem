@@ -25,8 +25,8 @@ private:
     Inode* root;
     Inode* currentDir;
 
-    int nextBlockIndex;
     std::vector<std::string> blockStorage;
+    std::vector<int> freeBlocks;
 
     Inode* FindChild(Inode* parent, const std::string& name) const;
     Inode* FindInode(const std::string& path, bool resolveToParent = false) const;
