@@ -1,10 +1,10 @@
-#include "FileSystem.hpp"
+#include "FileSystemLinked.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
 
 int main() {
-    FileSystem fs;
+    FileSystemLinked fs;
     std::string input;
 
     std::cout << "Sistema de Arquivos (I-Node Simulado)\n";
@@ -89,7 +89,7 @@ int main() {
             std::string destiny;
             iss >> source;
             iss >> destiny;
-            fs.Mv(source, destiny);
+            fs.Move(source, destiny);
             continue;
         }
 
