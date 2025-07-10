@@ -1,9 +1,9 @@
 #include "InodeLinked.hpp"
 
-Inode::Inode(std::string name, Type type)
+InodeLinked::InodeLinked(std::string name, Type type)
     : name(name), type(type), size(0), firstBlock(-1), parent(nullptr) {}
 
-std::string Inode::Read(const std::vector<DataBlock>& blocks) const {
+std::string InodeLinked::Read(const std::vector<DataBlock>& blocks) const {
     std::string result;
     int current = firstBlock;
 
@@ -15,7 +15,7 @@ std::string Inode::Read(const std::vector<DataBlock>& blocks) const {
     return result;
 }
 
-void Inode::Write(const std::string& data, std::vector<DataBlock>& blocks, bool overwrite) {
+void InodeLinked::Write(const std::string& data, std::vector<DataBlock>& blocks, bool overwrite) {
     const int blockSize = 8;
 
     if (overwrite && firstBlock != -1) {
@@ -63,6 +63,6 @@ void Inode::Write(const std::string& data, std::vector<DataBlock>& blocks, bool 
     }
 }
 
-bool Inode::IsDirectory() const {
+bool InodeLinked::IsDirectory() const {
     return type == Type::DIRECTORY;
 }
