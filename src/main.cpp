@@ -1,10 +1,10 @@
-#include "FileSystem.hpp"
+#include "FileSystemLinked.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
 
 int main() {
-    FileSystem fs;
+    FileSystemLinked fs;
     std::string input;
 
     std::cout << "Sistema de Arquivos (I-Node Simulado)\n";
@@ -89,7 +89,7 @@ int main() {
             std::string destiny;
             iss >> source;
             iss >> destiny;
-            fs.Mv(source, destiny);
+            fs.Move(source, destiny);
             continue;
         }
 
@@ -115,6 +115,18 @@ int main() {
             fs.Rm(path, recursive);
             continue;
         }
+
+        if (cmd == "status") {
+            fs.PrintBlockStatus();
+            continue;
+        }
+
+        if (cmd == "blocos") {
+        std::string path;
+        iss >> path;
+        fs.ShowBlocks(path);
+        continue;
+    }
 
         if (cmd == "exit") {
             std::cout << "\033[1;36mBrunOS\033[0m\033[1;35m » \033[0m\033[1;33mSaindo...\033[0m\n";
