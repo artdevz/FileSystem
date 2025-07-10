@@ -7,7 +7,6 @@ FileSystem::FileSystem() {
     root = new Inode("/", Inode::Type::DIRECTORY);
     root->parent = nullptr;
     currentDir = root;
-    nextBlockIndex = 0;
 }
 
 FileSystem::~FileSystem() { 
@@ -200,7 +199,7 @@ void FileSystem::Echo(const std::string& path, const std::string& content, bool 
         return;
     }
     
-    target->Write(content, blockStorage, overwrite);
+    target->Write(content, blockStorage, freeBlocks, overwrite);
 }
 
 
@@ -218,6 +217,9 @@ void FileSystem::Cat(const std::string& path) {
     }
 
     std::cout << target->Read(blockStorage) << "\n";
+
+    // DEBUG
+    target->DebugPrintBlocks(blockStorage);
 }
 
 
@@ -305,7 +307,10 @@ Inode* FileSystem::FindInode(const std::string& path, bool resolveToParent) cons
 
 void FileSystem::DeleteInode(Inode* node) {
     for (int i : node->dataBlocks) {
-        if (i >= 0 && i < static_cast<int>(blockStorage.size())) blockStorage[i] = "null";
+        if (i >= 0 && i < static_cast<int>(blockStorage.size())) {
+            blockStorage[i] = "null";
+            freeBlocks.push_back(i);
+        }
     }
     delete node;
 }
