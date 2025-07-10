@@ -217,6 +217,9 @@ void FileSystem::Cat(const std::string& path) {
     }
 
     std::cout << target->Read(blockStorage) << "\n";
+
+    // DEBUG
+    target->DebugPrintBlocks(blockStorage);
 }
 
 

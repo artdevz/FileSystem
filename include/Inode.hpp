@@ -23,4 +23,6 @@ public:
 
     bool IsDirectory() const;
 
+    void DebugPrintBlocks(const std::vector<std::string>& blockStorage) const;
+
 };
