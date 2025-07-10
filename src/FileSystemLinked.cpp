@@ -49,22 +49,26 @@ void FileSystemLinked::Touch(const std::string& path) {
         return;
     }
 
-    InodeLinked* parent = FindInode(path, true);
+    size_t lastSlash = path.find_last_of('/');
+    std::string parentPath = (lastSlash == std::string::npos) ? "" : path.substr(0, lastSlash);
+    std::string name = path.substr(lastSlash + 1);
+
+    InodeLinked* parent = FindInode(parentPath, false);
     if (!parent || !parent->IsDirectory()) {
-        PRINT_ERROR("Criação de Arquivo não permitida, pois '" << path << "' não é um diretório");
+        PRINT_ERROR("Criação de Arquivo não permitida, pois '" << parentPath << "' não é um diretório");
         return;
     }
 
-    std::string name = path.substr(path.find_last_of('/') + 1);
     if (FindChild(parent, name)) {
         std::cout << "\033[1;31m[Erro]\033[0m Já existe um arquivo com '" << name << "'\n";
         return;
     }
 
-    InodeLinked* newInode = new InodeLinked(path, InodeLinked::Type::FILE);
+    InodeLinked* newInode = new InodeLinked(name, InodeLinked::Type::FILE);
     newInode->parent = parent;
     parent->children.push_back(newInode);
 }
+
 
 void FileSystemLinked::Ls(const std::string& path) const {
     InodeLinked* dir = path.empty()? currentDir : FindInode(path);
