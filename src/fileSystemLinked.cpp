@@ -38,9 +38,9 @@ void FileSystemLinked::Mkdir(const std::string& path) {
         return;
     }
 
-    InodeLinked* newInode = new InodeLinked(path, InodeLinked::Type::DIRECTORY);
-    newInode->parent = currentDir;
-    currentDir->children.push_back(newInode);
+    InodeLinked* newInode = new InodeLinked(name, InodeLinked::Type::DIRECTORY);
+    newInode->parent = parent;
+    parent->children.push_back(newInode);
 }
 
 void FileSystemLinked::Touch(const std::string& path) {
@@ -62,8 +62,8 @@ void FileSystemLinked::Touch(const std::string& path) {
     }
 
     InodeLinked* newInode = new InodeLinked(path, InodeLinked::Type::FILE);
-    newInode->parent = currentDir;
-    currentDir->children.push_back(newInode);
+    newInode->parent = parent;
+    parent->children.push_back(newInode);
 }
 
 void FileSystemLinked::Ls(const std::string& path) const {
