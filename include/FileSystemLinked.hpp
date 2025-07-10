@@ -5,10 +5,6 @@
 
 #define PRINT_ERROR(msg) std::cout << "\033[1;36mBrunOS\033[0m\033[1;35m » \033[0m\033[1;31m[Erro]\033[0m\033[1;35m » \033[0m" << msg << "\n"
 
-struct DataBlock {
-    std::string data;
-    int next = -1; 
-};
 
 class FileSystemLinked {
 

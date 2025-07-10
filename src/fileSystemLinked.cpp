@@ -10,7 +10,7 @@ FileSystemLinked::FileSystemLinked() {
     currentDir = root;
     nextBlockIndex = 0;
 
-    blockStorage.resize(100);  // DataBlock default: data = "", next = -1
+    blockStorage.resize(10000);  // DataBlock default: data = "", next = -1
 }
 
 FileSystemLinked::~FileSystemLinked() {
@@ -243,38 +243,38 @@ void FileSystemLinked::Rm(const std::string& path, bool recursive) {
 
 // AUXILIARES
 
+InodeLinked* FileSystemLinked::FindChild(InodeLinked* parent, const std::string& name) const {
+    if (!parent) return nullptr;
+    for (InodeLinked* child : parent->children) {
+        if (child->name == name) return child;
+    }
+    return nullptr;
+}
+
 InodeLinked* FileSystemLinked::FindInode(const std::string& path, bool resolveToParent) const {
-    // Verifica se o caminho está vazio
     if (path.empty()) return nullptr;
     
-    // Define o ponto de partida: raiz se começa com '/', senão diretório atual
     InodeLinked* current = (path[0] == '/') ? root : currentDir;
     
-    // Processa o caminho dividindo por '/'
     std::istringstream ss(path);
     std::string token;
     std::vector<std::string> parts;
     
-    // Divide o caminho em partes e processa casos especiais
     while (std::getline(ss, token, '/')) {
-        if (token.empty() || token == ".") continue;  // Ignora partes vazias e "."
+        if (token.empty() || token == ".") continue;  
         
         if (token == "..") {
-            // Trata ".." (diretório pai)
             if (!parts.empty()) {
-                parts.pop_back();  // Remove a última parte se existe
+                parts.pop_back();  
                 continue;
             }
-            // Se não há partes para remover, navega para o pai
             if (current->parent) current = current->parent;
             continue;
         }
         
-        // Adiciona parte válida ao vetor
         parts.push_back(token);
     }
     
-    // Se resolveToParent é true, remove a última parte (retorna o diretório pai)
     if (resolveToParent && !parts.empty()) {
         parts.pop_back();
     }
