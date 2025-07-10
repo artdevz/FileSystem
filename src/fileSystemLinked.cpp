@@ -10,7 +10,7 @@ FileSystemLinked::FileSystemLinked() {
     currentDir = root;
     nextBlockIndex = 0;
 
-    blockStorage.resize(100000);  
+    blockStorage.resize(100000);  // DataBlock default: data = "", next = -1
 }
 
 FileSystemLinked::~FileSystemLinked() {
@@ -316,6 +316,43 @@ void FileSystemLinked::RecursiveDelete(InodeLinked* node) {
         node->children.clear();
     }
     DeleteInode(node);
+}
+void FileSystemLinked::PrintBlockStatus() const {
+    int used = 0;
+    for (const auto& block : blockStorage) {
+        if (!block.data.empty()) used++;
+    }
+    std::cout << "Blocos usados: " << used << " / " << blockStorage.size() << "\n";
+}
+
+void FileSystemLinked::ShowBlocks(const std::string& path) {
+    InodeLinked* target = FindInode(path);
+    if (!target) {
+        PRINT_ERROR("Arquivo não encontrado: '" << path << "'");
+        return;
+    }
+
+    if (target->IsDirectory()) {
+        PRINT_ERROR("'" << path << "' é um diretório");
+        return;
+    }
+
+    int current = target->firstBlock;
+    if (current == -1) {
+        std::cout << "Arquivo vazio: nenhum bloco alocado.\n";
+        return;
+    }
+
+    std::cout << "Blocos encadeados de '" << path << "':\n";
+
+    while (current != -1) {
+        const auto& block = blockStorage[current];
+        std::cout << "Bloco " << current
+                  << " | Conteúdo: \"" << block.data << "\""
+                  << " | Próximo: " << block.next << "\n";
+
+        current = block.next;
+    }
 }
 
 // GET

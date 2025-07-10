@@ -7,7 +7,6 @@
 
 
 class FileSystemLinked {
-
 public:
     FileSystemLinked();
     ~FileSystemLinked();
@@ -20,15 +19,17 @@ public:
     void Echo(const std::string& fileName, const std::string& content, bool overwrite = true);         
     void Cat(const std::string& fileName);                                      
     void Rm(const std::string& name, bool recursive = false);                                           
-
+    void PrintBlockStatus() const;    
+    void ShowBlocks(const std::string& path) ;
     std::string GetCurrentPath() const;
+    std::vector<DataBlock> blockStorage;  
+
 
 private:
     InodeLinked* root;
     InodeLinked* currentDir;
 
     int nextBlockIndex;
-    std::vector<DataBlock> blockStorage;  
 
     InodeLinked* FindChild(InodeLinked* parent, const std::string& name) const;
     InodeLinked* FindInode(const std::string& path, bool resolveToParent= false) const;

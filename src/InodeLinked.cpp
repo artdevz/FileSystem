@@ -44,7 +44,6 @@ void InodeLinked::Write(const std::string& data, std::vector<DataBlock>& blocks,
 
         int newBlock = -1;
 
-        // Busca bloco livre
         for (int j = 0; j < static_cast<int>(blocks.size()); ++j) {
             if (blocks[j].data.empty()) {
                 newBlock = j;
@@ -52,7 +51,6 @@ void InodeLinked::Write(const std::string& data, std::vector<DataBlock>& blocks,
             }
         }
 
-        // Se não encontrar, não há mais blocos livres
         if (newBlock == -1) {
             std::cerr << "[Erro] Limite de blocos atingido\n";
             return;

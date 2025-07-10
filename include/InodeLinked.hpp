@@ -3,9 +3,12 @@
 #include <vector>
 
 struct DataBlock {
-    std::string data = "null";
-    int next = -1;
+    std::string data;
+    int next;
+
+    DataBlock() : data(""), next(-1) {}
 };
+
 
 class InodeLinked {
 public:
@@ -23,6 +26,5 @@ public:
 
     std::string Read(const std::vector<DataBlock>& blocks) const;
     void Write(const std::string& data, std::vector<DataBlock>& blocks, bool overwrite);
-
     bool IsDirectory() const;
 };
