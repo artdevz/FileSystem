@@ -4,7 +4,6 @@
 #include <sstream>
 #include <string>
 #include <memory>
-#include "benchmark.hpp"
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -143,38 +142,6 @@ int main(int argc, char* argv[]) {
             else PRINT_ERROR("Comando exclusivo do modo encadeado");
             continue;
         }
-
-    if (cmd == "benchmark") {
-        int numBlocks = 100;     // Número de blocos no arquivo
-        int numAccesses = 1000;  // Número de acessos aleatórios
-
-        Inode inodeFile("benchmarkInode", Inode::Type::FILE);
-        inodeFile.dataBlocks.resize(numBlocks);
-        std::vector<std::string> inodeBlocks(numBlocks);
-        for (int i = 0; i < numBlocks; ++i) {
-            inodeFile.dataBlocks[i] = i;
-            inodeBlocks[i] = "data" + std::to_string(i);
-        }
-
-        InodeLinked linkedFile("benchmarkLinked", InodeLinked::Type::FILE);
-        linkedFile.firstBlock = 0;
-        std::vector<DataBlock> linkedBlocks(numBlocks);
-        for (int i = 0; i < numBlocks; ++i) {
-            linkedBlocks[i].data = "data" + std::to_string(i);
-            linkedBlocks[i].next = (i == numBlocks - 1) ? -1 : i + 1;
-        }
-
-        int countBlocks = CountBlocksInChain(47, linkedBlocks);
-        std::cout << "Número de blocos na cadeia a partir do bloco 47: " << countBlocks << "\n";
-
-        BenchmarkResult result;
-        BenchmarkRandomAccess(&inodeFile, inodeBlocks, &linkedFile, linkedBlocks, numAccesses, result);
-
-        ExportBenchmarkCSV(result, "benchmark.csv");
-        std::cout << "Benchmark concluído. Resultados em benchmark.csv\n";
-        continue;
-    }
-
 
         if (cmd == "exit") {
             std::cout << "\033[1;36mBrunOS\033[0m\033[1;35m » \033[0m\033[1;33mSaindo...\033[0m\n";
