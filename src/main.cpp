@@ -152,9 +152,76 @@ int main(int argc, char* argv[]) {
 
             if (operation == "cd") {
                 std::string path;
-                iss >> path;
+                if (!(iss >> path)) {
+                    PRINT_ERROR("Uso: benchmark cd <caminho>");
+                    continue;
+                }
                 double time_taken = benchmark_cd(fs.get(), path);
-                std::cout << "Tempo de navegação para o diretório '" << path << "': " << time_taken*1000000 << " micro-segundos" << std::endl;
+                std::cout << "Tempo de navegação para o diretório '" << path << "': " << time_taken*1e6 << " micro-segundos" << std::endl;
+                continue;
+            }
+
+            if (operation == "read") {
+                std::string path;
+                if (!(iss >> path)) {
+                    PRINT_ERROR("Uso: benchmark read <arquivo>");
+                    continue;
+                }
+                double time_taken = benchmark_read(fs.get(), path);
+                std::cout << "Tempo de leitura do arquivo '" << path << "': " << time_taken*1e6 << " micro-segundos" << std::endl;
+                continue;
+            }
+
+            if (operation == "write") {
+                std::string path;
+                std::string content;
+                std::string mode;
+        
+                if (!(iss >> path)) {
+                    PRINT_ERROR("Uso: benchmark write <arquivo> \"<conteúdo>\" >|>>");
+                    continue;
+                }
+        
+                iss >> std::ws;
+                if (iss.peek() == '"') iss.get(); // Consome aspas de abertura
+        
+                std::getline(iss, content, '"');
+                iss >> mode;
+        
+                if (mode != ">" && mode != ">>") {
+                    PRINT_ERROR("Modo inválido. Use '>' para sobrescrever ou '>>' para append.");
+                    continue;
+                }
+        
+                bool overwrite = (mode == ">");
+                double time_taken = benchmark_write(fs.get(), path, content, overwrite);
+                std::cout << "Tempo de escrita no arquivo '" << path << "': " 
+                          << time_taken * 1e6 << " micro-segundos\n";
+                continue;
+            }
+
+            if (operation == "mv") {
+                std::string source, destiny;
+                if (!(iss >> source >> destiny)) {
+                    PRINT_ERROR("Uso: benchmark mv <origem> <destino>");
+                    continue;
+                }
+                double time_taken = benchmark_move(fs.get(), source, destiny);
+                std::cout << "Tempo de movimentação do arquivo '" << source 
+                          << "' para '" << destiny << "': " 
+                          << time_taken * 1e6 << " micro-segundos\n";
+                continue;
+            }
+
+            if (operation == "remove") {
+                std::string path;
+                if (!(iss >> path)) {
+                    PRINT_ERROR("Uso: benchmark remove <arquivo>");
+                    continue;
+                }
+                double time_taken = benchmark_remove(fs.get(), path);
+                std::cout << "Tempo de remoção do arquivo '" << path << "': " 
+                          << time_taken * 1e6 << " micro-segundos\n";
                 continue;
             }
 
@@ -208,47 +275,8 @@ int main(int argc, char* argv[]) {
                 continue;
             }
 
-            if (operation == "read") {
-                std::string path;
-                iss >> path;
-                double time_taken = benchmark_read(fs.get(), path);
-                std::cout << "Tempo de leitura do arquivo '" << path << "': " << time_taken*1000000 << " micro-segundos" << std::endl;
-                continue;
-            }
-
-            if (operation == "write") {
-                std::string path, content;
-                bool overwrite;
-                iss >> path;
-                iss >> std::ws; // Ignora qualquer espaço extra
-                std::getline(iss, content, '"'); // Lê o conteúdo entre aspas
-                std::string redirect;
-                iss >> redirect;
-        
-                overwrite = (redirect == ">"); // Se for '>', sobrescreve, senão faz append
-        
-                double time_taken = benchmark_write(fs.get(), path, content, overwrite);
-                std::cout << "Tempo de escrita no arquivo '" << path << "': " << time_taken*1000000 << " micro-segundos" << std::endl;
-                continue;
-            }
-
-            if (operation == "mv") {
-                std::string source, destiny;
-                iss >> source >> destiny;
-                double time_taken = benchmark_move(fs.get(), source, destiny);
-                std::cout << "Tempo de movimentação do arquivo '" << source << "' para '" << destiny << "': " << time_taken*1000000 << " micro-segundos" << std::endl;
-                continue;
-            }
-
-            if (operation == "remove") {
-                std::string path;
-                iss >> path;
-                double time_taken = benchmark_remove(fs.get(), path);
-                std::cout << "Tempo de remoção do arquivo '" << path << "': " << time_taken*1000000 << " micro-segundos" << std::endl;
-                continue;
-            }
-
-            PRINT_ERROR("Operação não reconhecida. Use 'cd', 'random_access', 'read', 'write', 'mv' ou 'remove'.");
+            PRINT_ERROR("Operação não reconhecida. Use 'cd', 'read', 'write', 'mv', 'remove' ou 'random_access'.");
+            continue;
         }
 
         if (cmd == "exit") {

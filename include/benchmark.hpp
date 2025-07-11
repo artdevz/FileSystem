@@ -131,4 +131,3 @@ double benchmark_move(FileSystem* fs, const std::string& source, const std::stri
     std::chrono::duration<double> duration = end - start;
     return duration.count(); // Retorna o tempo em segundos
 }
-
