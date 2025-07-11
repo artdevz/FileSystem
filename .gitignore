@@ -32,3 +32,5 @@ obj/
 # Specific System Files
 .DS_Store
 Thumbs.db
+*.png
+*.csv

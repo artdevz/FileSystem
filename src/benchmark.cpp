@@ -72,3 +72,14 @@ void ExportBenchmarkCSV(const BenchmarkResult& result, const std::string& filena
     }
     out.close();
 }
+
+int CountBlocksInChain(int startBlockIndex, const std::vector<DataBlock>& linkedBlocks) {
+    int count = 0;
+    int current = startBlockIndex;
+    while (current != -1) {
+        count++;
+        current = linkedBlocks[current].next;
+    }
+    return count;
+}
+
